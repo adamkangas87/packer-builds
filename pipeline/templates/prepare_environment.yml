@@ -1,0 +1,54 @@
+stages:
+- stage: prepare_environment
+  jobs:
+    - job: echo_variables
+      steps:
+      - bash: |
+          echo "========================================== Check Variables =============================================" 
+          echo os_family:                     ${{ parameters.os_family }}
+          echo os_flavor:                     ${{ parameters.os_flavor }}
+          echo os_version:                    ${{ parameters.os_version }}
+          echo guest_os_type:                 ${{ parameters.guest_os_type }}
+          echo vsphere_username:              ${{ parameters.vsphere_username }}
+          echo vsphere_password:              REDACTED
+          echo vsphere_server:                ${{ parameters.vsphere_server }}
+          echo winrm_connection_username:     ${{ parameters.winrm_connection_username }}
+          echo winrm_connection_password:     REDACTED
+          echo ssh_username:                  ${{ parameters.ssh_username }}
+          echo ssh_password:                  REDACTED
+          echo vsphere_datacenter:            ${{ parameters.vsphere_datacenter }}
+          echo vsphere_cluster:               ${{ parameters.vsphere_cluster }}
+          echo vsphere_datastore:             ${{ parameters.vsphere_datastore }}
+          echo vsphere_folder:                ${{ parameters.vsphere_folder }}
+          echo vsphere_library:               ${{ parameters.vsphere_library }}
+          echo subscription_manager_username: ${{ parameters.subscription_manager_username }}
+          echo subscription_manager_password: REDACTED
+          echo vm_network:                    ${{ parameters.vm_network }}
+          echo os_iso_path:                   ${{ parameters.os_iso_path }}
+          echo boot_type:                     ${{ parameters.boot_type }}
+          echo disk_size:                     ${{ parameters.disk_size }}
+          echo disk_type:                     ${{ parameters.disk_type }}
+          echo num_cores:                     ${{ parameters.num_cores }}
+          echo num_cpu:                       ${{ parameters.num_cpu }}
+          echo vm_ram:                        ${{ parameters.vm_ram }}
+
+    - job: install_tools
+      dependsOn: echo_variables
+      steps:
+      - bash: |
+          echo "========================================== Install Tools =============================================" 
+          sudo yum -y install packer
+    
+    - job: test_tools
+      dependsOn: install_tools
+      steps:
+      - bash: |
+          echo "========================================== Test Tools =============================================" 
+          echo packer version: $(/usr/bin/packer -v)
+
+    - job: init_plugins
+      dependsOn: test_tools
+      steps:
+      - bash: |
+          echo "========================================== Init Packer Plugins =============================================" 
+          sudo /usr/bin/packer init required_plugins.pkr.hcl

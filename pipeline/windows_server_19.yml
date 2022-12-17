@@ -1,0 +1,70 @@
+name: $(Date:yyyyMMdd)$(Rev:.r)
+trigger: none
+
+schedules:
+- cron: "40 16 * * Fri" #UTC Time
+  displayName: Weekly Windows Server 2019 build
+  branches:
+    include:
+    - main
+  always: true
+
+pool: packer
+
+variables:
+  - group: "vcenter"
+  - group: "packer_auto_variables"
+  - group: "pkr_svc_acc"
+  - group: "windows_server_19"
+  - group: "winrm_details"
+
+stages:
+  - template: templates/prepare_environment.yml
+    parameters:
+      os_family:                    $(os_family)
+      os_flavor:                    $(os_flavor)
+      os_version:                   $(os_version)
+      guest_os_type:                $(guest_os_type)
+      vsphere_server:               $(vsphere_server)
+      vsphere_username:             $(svc_username)
+      vsphere_password:             $(svc_password)
+      winrm_connection_username:    $(winrm_connection_username)
+      winrm_connection_password:    $(winrm_connection_password)
+      vsphere_datacenter:           $(vsphere_datacenter)
+      vsphere_cluster:              $(vsphere_cluster)
+      vsphere_datastore:            $(vsphere_datastore)
+      vsphere_folder:               $(vsphere_folder)
+      vsphere_library:              $(vsphere_library)
+      vm_network:                   $(vm_network)
+      os_iso_path:                  $(os_iso_path)
+      boot_type:                    $(boot_type)
+      disk_size:                    $(disk_size)
+      disk_type:                    $(disk_type)
+      num_cores:                    $(num_cores)
+      num_cpu:                      $(num_cpu)
+      vm_ram:                       $(vm_ram)
+      
+  - template: templates/build_image.yml
+    parameters:
+      os_family:                    $(os_family)
+      os_flavor:                    $(os_flavor)
+      os_version:                   $(os_version)
+      guest_os_type:                $(guest_os_type)
+      vsphere_server:               $(vsphere_server)
+      vsphere_username:             $(svc_username)
+      vsphere_password:             $(svc_password)
+      winrm_connection_username:    $(winrm_connection_username)
+      winrm_connection_password:    $(winrm_connection_password)
+      vsphere_datacenter:           $(vsphere_datacenter)
+      vsphere_cluster:              $(vsphere_cluster)
+      vsphere_datastore:            $(vsphere_datastore)
+      vsphere_folder:               $(vsphere_folder)
+      vsphere_library:              $(vsphere_library)
+      vm_network:                   $(vm_network)
+      os_iso_path:                  $(os_iso_path)
+      boot_type:                    $(boot_type)
+      disk_size:                    $(disk_size)
+      disk_type:                    $(disk_type)
+      num_cores:                    $(num_cores)
+      num_cpu:                      $(num_cpu)
+      vm_ram:                       $(vm_ram)

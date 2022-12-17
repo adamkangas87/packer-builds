@@ -1,0 +1,75 @@
+name: $(Date:yyyyMMdd)$(Rev:.r)
+trigger: none
+
+schedules:
+- cron: "40 16 * * Fri" #UTC Time
+  displayName: Weekly Rhel 8 build
+  branches:
+    include:
+    - main
+  always: true
+
+pool: packer
+
+variables:
+  - group: "vcenter"
+  - group: "packer_auto_variables"
+  - group: "pkr_svc_acc"
+  - group: "linux_rhel_8"
+  - group: "ssh_details" 
+  - group: "linux_subscription_manager"
+  
+stages:
+  - template: templates/prepare_environment.yml
+    parameters:
+      os_family:                      $(os_family)
+      os_flavor:                      $(os_flavor)
+      os_version:                     $(os_version)
+      guest_os_type:                  $(guest_os_type)
+      vsphere_server:                 $(vsphere_server)
+      vsphere_username:               $(svc_username)
+      vsphere_password:               $(svc_password)
+      ssh_username:                   $(ssh_username)
+      ssh_password:                   $(ssh_password)
+      vsphere_datacenter:             $(vsphere_datacenter)
+      vsphere_cluster:                $(vsphere_cluster)
+      vsphere_datastore:              $(vsphere_datastore)
+      vsphere_folder:                 $(vsphere_folder)
+      vsphere_library:                $(vsphere_library)
+      subscription_manager_username:  $(subscription_manager_username)
+      subscription_manager_password:  $(subscription_manager_password)
+      vm_network:                     $(vm_network)
+      os_iso_path:                    $(os_iso_path)
+      boot_type:                      $(boot_type)
+      disk_size:                      $(disk_size)
+      disk_type:                      $(disk_type)
+      num_cores:                      $(num_cores)
+      num_cpu:                        $(num_cpu)
+      vm_ram:                         $(vm_ram)
+      
+  - template: templates/build_image.yml
+    parameters:
+      os_family:                      $(os_family)
+      os_flavor:                      $(os_flavor)
+      os_version:                     $(os_version)
+      guest_os_type:                  $(guest_os_type)
+      vsphere_server:                 $(vsphere_server)
+      vsphere_username:               $(svc_username)
+      vsphere_password:               $(svc_password)
+      ssh_username:                   $(ssh_username)
+      ssh_password:                   $(ssh_password)
+      vsphere_datacenter:             $(vsphere_datacenter)
+      vsphere_cluster:                $(vsphere_cluster)
+      vsphere_datastore:              $(vsphere_datastore)
+      vsphere_folder:                 $(vsphere_folder)
+      vsphere_library:                $(vsphere_library)
+      subscription_manager_username:  $(subscription_manager_username)
+      subscription_manager_password:  $(subscription_manager_password)
+      vm_network:                     $(vm_network)
+      os_iso_path:                    $(os_iso_path)
+      boot_type:                      $(boot_type)
+      disk_size:                      $(disk_size)
+      disk_type:                      $(disk_type)
+      num_cores:                      $(num_cores)
+      num_cpu:                        $(num_cpu)
+      vm_ram:                         $(vm_ram)

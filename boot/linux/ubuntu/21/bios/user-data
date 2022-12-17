@@ -1,0 +1,55 @@
+
+#cloud-config
+autoinstall:
+  version: 1
+  early-commands:
+    - sudo systemctl stop ssh
+  network:
+    network:
+    version: 2
+    ethernets:
+      ens192:
+        dhcp4: yes
+        dhcp-identifier: mac
+  locale: en_US
+  keyboard:
+    layout: en
+    variant: us
+  users:
+  - default
+  - name: admin
+    lock_passwd: false
+    passwd: "$6$uca4d3ptCcp0MbSi$aaHI5JggfEbz.O1yrM5HGgXUcgGuzYXIWYy0Bk0Qm1/VMrOIhEHJfjWWByifAGUlqmRcTu4RM5V96G2uzLTyk."
+  - name: root
+    lock_passwd: false
+    passwd: "$6$uca4d3ptCcp0MbSi$aaHI5JggfEbz.O1yrM5HGgXUcgGuzYXIWYy0Bk0Qm1/VMrOIhEHJfjWWByifAGUlqmRcTu4RM5V96G2uzLTyk."
+  identity:
+    hostname: pkrubuntu21-bld
+    username: admin
+    password: '$6$uca4d3ptCcp0MbSi$aaHI5JggfEbz.O1yrM5HGgXUcgGuzYXIWYy0Bk0Qm1/VMrOIhEHJfjWWByifAGUlqmRcTu4RM5V96G2uzLTyk.'
+  ssh:
+    install-server: yes
+    allow-pw: yes
+  storage:
+    layout:
+      name: lvm
+  apt:
+    geoip: true
+    preserve_sources_list: false
+    primary:
+    - arches: [amd64, i386]
+      uri: http://archive.ubuntu.com/ubuntu
+    - arches: [default]
+      uri: http://ports.ubuntu.com/ubuntu-ports
+    proxy: http://proxy.company.com:80
+    http_proxy: http://proxy.company.com:80
+    ftp_proxy: http://proxy.company.com:80
+    https_proxy: http://proxy.company.com:80
+  user-data:
+    disable_root: false
+    timezone: Australia/Adelaide
+  late-commands:
+    - 'sed -i "s/dhcp4: true/&\n      dhcp-identifier: mac/" /target/etc/netplan/00-installer-config.yaml'
+    - sed -i -e 's/^#\?PermitRootLogin.*/PermitRootLogin yes/g' /target/etc/ssh/sshd_config
+    - echo 'admin ALL=(ALL) ALL=(ALL)' > /target/etc/sudoers.d/admin
+    - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/admin

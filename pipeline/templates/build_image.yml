@@ -1,0 +1,41 @@
+stages:
+- stage: build_image
+  dependsOn: prepare_environment
+  jobs:
+  - job: build
+    timeoutInMinutes: 180
+    steps:
+    - bash: |
+        echo "========================================== Packer Build ============================================="
+        sudo /usr/bin/packer build \
+        --only vsphere-iso.${{ parameters.os_family}} \
+        --var-file=${{ parameters.os_family}}.${{ parameters.os_flavor}}.${{ parameters.os_version}}.${{ parameters.boot_type}}.pkrvars.hcl \
+        --var="vsphere_server=${{ parameters.vsphere_server }}" \
+        --var="vsphere_username=${{ parameters.vsphere_username }}" \
+        --var="vsphere_password=${{ parameters.vsphere_password }}" \
+        --var="ssh_username=${{ parameters.ssh_username }}" \
+        --var="ssh_password=${{ parameters.ssh_password }}" \
+        --var="winrm_connection_username=${{ parameters.winrm_connection_username }}" \
+        --var="winrm_connection_password=${{ parameters.winrm_connection_password }}" \
+        --var="os_family=${{ parameters.os_family }}" \
+        --var="os_flavor=${{ parameters.os_flavor }}" \
+        --var="os_version=${{ parameters.os_version }}" \
+        --var="guest_os_type=${{ parameters.guest_os_type }}" \
+        --var="vsphere_datacenter=${{ parameters.vsphere_datacenter }}" \
+        --var="vsphere_cluster=${{ parameters.vsphere_cluster }}" \
+        --var="vsphere_datastore=${{ parameters.vsphere_datastore }}" \
+        --var="vsphere_folder=${{ parameters.vsphere_folder }}" \
+        --var="vsphere_library=${{ parameters.vsphere_library }}" \
+        --var="subscription_manager_username=${{ parameters.subscription_manager_username }}" \
+        --var="subscription_manager_password=${{ parameters.subscription_manager_password }}" \
+        --var="vm_network=${{ parameters.vm_network }}" \
+        --var="os_iso_path=${{ parameters.os_iso_path }}" \
+        --var="boot_type=${{ parameters.boot_type }}" \
+        --var="disk_size=${{ parameters.disk_size }}" \
+        --var="disk_type=${{ parameters.disk_type }}" \
+        --var="num_cores=${{ parameters.num_cores }}" \
+        --var="num_cpu=${{ parameters.num_cpu }}" \
+        --var="vm_ram=${{ parameters.vm_ram }}" \
+        -timestamp-ui \
+        -on-error=cleanup \
+        -force .
